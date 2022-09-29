@@ -16,16 +16,16 @@ const message = document.querySelector(".message");
 const playAgain = document.querySelector(".play-again");
 // test word until later when a list of words is fetched
 let word = "magnolia";
-const guessedLetters = [];
+let guessedLetters = [];
 let remainingGuesses = 8;
 
 const getWord = async function () {
     const res = await fetch( "https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt")
-const words = await res.text();
-const wordArray = words.split("\n");
-const randomIndex = Math.floor(Math.random() * wordArray.length);
-word = wordArray[randomIndex].trim();
-hideWord(word);
+    const words = await res.text();
+    const wordArray = words.split("\n");
+    const randomIndex = Math.floor(Math.random() * wordArray.length);
+    word = wordArray[randomIndex].trim();
+    hideWord(word);
 };
 getWord();
 
@@ -109,8 +109,8 @@ const checkGuessNumber = function (letter) {
         remainingGuesses = remainingGuesses - 1;
     }
     if (remainingGuesses === 0) {
-        message.innerText = "";
-        guessesRemaining.innerText = `Sad trombone! Game over. The secret word was ${word.toUpperCase()}.`
+        message.innerText = `Sad trombone! Game over. The secret word was ${word.toUpperCase()}.`
+        startOver();
     } else if (remainingGuesses === 1) {
         numGuesses.innerText = `only one guess`;
     } else {
@@ -122,6 +122,28 @@ const checkIfWon = function () {
     if (wordInProgress.innerText === word.toUpperCase()) {
         message.classList.add("win");
         message.innerHTML = '<p class="highlight">You guessed correct the word! Congrats!</p>';
+        startOver();
     }
 };
 
+const startOver = function () {
+    guessButton.classList.add("hide");
+    guessesRemaining.classList.add("hide");
+    guesses.classList.add("hide");
+    playAgain.classList.remove("hide");
+}
+
+playAgain.addEventListener("click", function (e){
+    e.preventDefault();
+    message.classList.remove("win");
+    message.innerText = "";
+    guesses.innerText = "";
+    remainingGuesses = 8;
+    guessedLetters = [];
+    numGuesses.innerText = `${remainingGuesses} guesses`;
+    guessButton.classList.remove("hide");
+    guessesRemaining.classList.remove("hide");
+    guesses.classList.remove("hide");
+    playAgain.classList.add("hide");
+    getWord();
+});
